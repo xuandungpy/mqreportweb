@@ -1,1 +1,5 @@
-st.title('Dữ liệu từ Oracle qua API')
+import streamlit as st
+import pandas as pd
+import requests
+
+st.title('MQ Report web')
