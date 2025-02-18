@@ -2,28 +2,21 @@ import streamlit as st
 import pandas as pd
 
 # Hàm để giả lập dữ liệu báo cáo
-def generate_report_data():
+def generate_report_data(columns):
     data = {
-        'ID': [1, 2, 3, 4, 5],
-        'MA': ['A001', 'A002', 'A003', 'A004', 'A005'],
-        'TEN': ['Sản phẩm 1', 'Sản phẩm 2', 'Sản phẩm 3', 'Sản phẩm 4', 'Sản phẩm 5'],
-        'Ngay': ['2025-01-01', '2025-02-01', '2025-03-01', '2025-04-01', '2025-05-01']
+        'Mã': ['A001', 'A002', 'A003', 'A004', 'A005'],
+        'Tên': ['Sản phẩm 1', 'Sản phẩm 2', 'Sản phẩm 3', 'Sản phẩm 4', 'Sản phẩm 5']
     }
+    if 'Đơn giá' in columns:
+        data['Đơn giá'] = [1000, 1500, 2000, 2500, 3000]
     df = pd.DataFrame(data)
     return df
-
-# Hàm để hiển thị báo cáo
-def display_report(df, title):
-    st.subheader(title)
-    st.dataframe(df)
 
 # Thiết lập cấu hình trang và tiêu đề
 st.set_page_config(page_title='Hệ Thống Báo Cáo', layout='wide')
 
 # Hiển thị logo
-st.image('logo.png', width=100)
-
-# Tạo thanh bên với các menu
+st.sidebar.image('logo.png', width=100)
 st.sidebar.title('Menu')
 
 # Tạo các menu chính và phụ
@@ -34,7 +27,7 @@ menu = {
     'Phis': ['Báo cáo NXT', 'Báo cáo tổng hợp', 'Nhập kho', 'Xuất kho'],
     'Ris': [],
     'Ensua': [],
-    'System': []
+    'System': ['Danh mục biệt dược', 'Danh mục viện phí', 'Danh mục icd']
 }
 
 # Tạo các menu con
@@ -44,15 +37,19 @@ sub_menu = {
     'Tổng hợp': ['Vụ kế hoạch', 'Vụ điều trị']
 }
 
-# Hiển thị toàn bộ menu chính và các mục con
+# Hiển thị toàn bộ menu chính và các mục con khi click vào mục chính
 for main_item, sub_items in menu.items():
-    st.sidebar.markdown(f'**{main_item}**')
-    for sub_item in sub_items:
-        if sub_item in sub_menu:
-            for sub_sub_item in sub_menu[sub_item]:
-                st.sidebar.markdown(f'- {sub_sub_item}')
-        else:
-            st.sidebar.markdown(f'- {sub_item}')
+    if sub_items:
+        with st.sidebar.expander(main_item, expanded=False):
+            for sub_item in sub_items:
+                if sub_item in sub_menu:
+                    with st.sidebar.expander(sub_item, expanded=False):
+                        for sub_sub_item in sub_menu[sub_item]:
+                            st.sidebar.markdown(f'- {sub_sub_item}')
+                else:
+                    st.sidebar.markdown(f'- {sub_item}')
+    else:
+        st.sidebar.markdown(main_item)
 
 # Phần điều kiện lọc
 st.title('Hệ Thống Báo Cáo')
@@ -69,30 +66,36 @@ with col3:
 with col4:
     ten = st.text_input('Tên')
 
+# Tạo nút thực hiện lọc và in ra PDF
 filter_button = st.button('Thực hiện lọc')
+pdf_button = st.button('In ra PDF')
 
 # Sinh dữ liệu báo cáo giả lập
-report_data = generate_report_data()
+report_data = generate_report_data(['Mã', 'Tên'])
 
-# Lọc dữ liệu khi bấm nút Thực hiện lọc
+# Lọc và hiển thị dữ liệu khi bấm nút Thực hiện lọc
 if filter_button:
     filtered_data = report_data[
-        (report_data['Ngay'] >= str(from_date)) &
-        (report_data['Ngay'] <= str(to_date)) &
-        (report_data['MA'].str.contains(ma, case=False)) &
-        (report_data['TEN'].str.contains(ten, case=False))
+        (report_data['Mã'].str.contains(ma, case=False)) &
+        (report_data['Tên'].str.contains(ten, case=False))
     ]
-    display_report(filtered_data, 'Dữ liệu báo cáo')
+    st.subheader('Dữ liệu báo cáo')
+    st.dataframe(filtered_data)
 
-# Nút in ra PDF
-if filter_button:
-    col5, col6 = st.columns(2)
-    with col5:
-        st.button('Xem trước mẫu in')
-    with col6:
-        st.button('In ra PDF')
+    if pdf_button:
+        st.write('Dữ liệu sẽ được in ra PDF')
 
-# Hiển thị bảng dữ liệu mẫu khi chưa chọn báo cáo
-if not filter_button:
-    st.write('Bảng dữ liệu mẫu:')
-    st.dataframe(report_data)
+# Hiển thị dữ liệu mẫu khi click vào Danh mục biệt dược hoặc Danh mục viện phí
+if 'Danh mục biệt dược' in menu['System']:
+    with st.sidebar.expander('Danh mục biệt dược', expanded=False):
+        if st.sidebar.button('Hiển thị dữ liệu'):
+            df = generate_report_data(['Mã', 'Tên'])
+            st.subheader('Danh mục biệt dược')
+            st.dataframe(df)
+
+if 'Danh mục viện phí' in menu['System']:
+    with st.sidebar.expander('Danh mục viện phí', expanded=False):
+        if st.sidebar.button('Hiển thị dữ liệu'):
+            df = generate_report_data(['Mã', 'Tên', 'Đơn giá'])
+            st.subheader('Danh mục viện phí')
+            st.dataframe(df)
