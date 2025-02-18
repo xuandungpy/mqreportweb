@@ -17,10 +17,13 @@ def display_report(df, title):
     st.subheader(title)
     st.dataframe(df)
 
-# Thiết lập tiêu đề và mô tả cho ứng dụng
+# Thiết lập cấu hình trang và tiêu đề
 st.set_page_config(page_title='Hệ Thống Báo Cáo', layout='wide')
+
+# Hiển thị logo
 st.image('logo.png', width=100)
 
+# Tạo thanh bên với các menu
 st.sidebar.title('Menu')
 st.sidebar.markdown('<div style="background-color: #f8d7da; padding: 10px;">', unsafe_allow_html=True)
 
@@ -45,13 +48,13 @@ sub_menu = {
 # Chọn menu chính
 main_menu = st.sidebar.selectbox('Chọn menu', list(menu.keys()))
 
-# Chọn menu phụ nếu có
+# Hiển thị menu phụ nếu có
 if menu[main_menu]:
     sub_menu_choice = st.sidebar.selectbox('Chọn loại báo cáo', menu[main_menu])
 else:
     sub_menu_choice = None
 
-# Chọn menu con nếu có
+# Hiển thị menu con nếu có
 if sub_menu_choice in sub_menu:
     sub_sub_menu_choice = st.sidebar.selectbox('Chọn loại báo cáo chi tiết', sub_menu[sub_menu_choice])
 else:
@@ -62,10 +65,18 @@ st.sidebar.markdown('</div>', unsafe_allow_html=True)
 # Phần điều kiện lọc
 st.title('Hệ Thống Báo Cáo')
 st.markdown('### Điều kiện lọc')
-from_date = st.date_input('Từ ngày', value=pd.to_datetime('2025-01-01'))
-to_date = st.date_input('Đến ngày', value=pd.to_datetime('2025-12-31'))
-ma = st.text_input('Mã')
-ten = st.text_input('Tên')
+col1, col2 = st.columns(2)
+with col1:
+    from_date = st.date_input('Từ ngày', value=pd.to_datetime('2025-01-01'))
+with col2:
+    to_date = st.date_input('Đến ngày', value=pd.to_datetime('2025-12-31'))
+
+col3, col4 = st.columns(2)
+with col3:
+    ma = st.text_input('Mã')
+with col4:
+    ten = st.text_input('Tên')
+
 filter_button = st.button('Thực hiện lọc')
 
 # Sinh dữ liệu báo cáo giả lập
@@ -83,8 +94,11 @@ if filter_button:
 
 # Nút xem trước mẫu in và in ra PDF
 if filter_button:
-    st.button('Xem trước mẫu in')
-    st.button('In ra PDF')
+    col5, col6 = st.columns(2)
+    with col5:
+        st.button('Xem trước mẫu in')
+    with col6:
+        st.button('In ra PDF')
 
 # Hiển thị bảng dữ liệu mẫu khi chưa chọn báo cáo
 if not filter_button:
