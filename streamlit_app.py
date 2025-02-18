@@ -25,9 +25,8 @@ st.image('logo.png', width=100)
 
 # Tạo thanh bên với các menu
 st.sidebar.title('Menu')
-st.sidebar.markdown('<div style="background-color: #f8d7da; padding: 10px;">', unsafe_allow_html=True)
 
-# Tạo các menu chính
+# Tạo các menu chính và phụ
 menu = {
     'Dashboard': [],
     'Bis': ['Bảng kê thu chi', 'Bảng kê tạm ứng', 'Doanh thu'],
@@ -38,29 +37,22 @@ menu = {
     'System': []
 }
 
-# Tạo các menu phụ
+# Tạo các menu con
 sub_menu = {
     'Khám bệnh': ['Danh sách đăng ký', 'Danh sách khám bệnh'],
     'Nội Trú': ['Danh sách hiện diện'],
     'Tổng hợp': ['Vụ kế hoạch', 'Vụ điều trị']
 }
 
-# Chọn menu chính
-main_menu = st.sidebar.selectbox('Chọn menu', list(menu.keys()))
-
-# Hiển thị menu phụ nếu có
-if menu[main_menu]:
-    sub_menu_choice = st.sidebar.selectbox('Chọn loại báo cáo', menu[main_menu])
-else:
-    sub_menu_choice = None
-
-# Hiển thị menu con nếu có
-if sub_menu_choice in sub_menu:
-    sub_sub_menu_choice = st.sidebar.selectbox('Chọn loại báo cáo chi tiết', sub_menu[sub_menu_choice])
-else:
-    sub_sub_menu_choice = None
-
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
+# Hiển thị toàn bộ menu chính và các mục con
+for main_item, sub_items in menu.items():
+    st.sidebar.markdown(f'**{main_item}**')
+    for sub_item in sub_items:
+        if sub_item in sub_menu:
+            for sub_sub_item in sub_menu[sub_item]:
+                st.sidebar.markdown(f'- {sub_sub_item}')
+        else:
+            st.sidebar.markdown(f'- {sub_item}')
 
 # Phần điều kiện lọc
 st.title('Hệ Thống Báo Cáo')
@@ -92,7 +84,7 @@ if filter_button:
     ]
     display_report(filtered_data, 'Dữ liệu báo cáo')
 
-# Nút xem trước mẫu in và in ra PDF
+# Nút in ra PDF
 if filter_button:
     col5, col6 = st.columns(2)
     with col5:
