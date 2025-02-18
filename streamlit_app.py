@@ -2,21 +2,24 @@ import streamlit as st
 import pandas as pd
 
 # Hàm để giả lập dữ liệu báo cáo
-def generate_report_data(columns):
+def generate_report_data():
     data = {
+        'ID': [1, 2, 3, 4, 5],
         'Mã': ['A001', 'A002', 'A003', 'A004', 'A005'],
-        'Tên': ['Sản phẩm 1', 'Sản phẩm 2', 'Sản phẩm 3', 'Sản phẩm 4', 'Sản phẩm 5']
+        'Tên': ['Sản phẩm 1', 'Sản phẩm 2', 'Sản phẩm 3', 'Sản phẩm 4', 'Sản phẩm 5'],
+        'Ngày': ['2025-01-01', '2025-02-01', '2025-03-01', '2025-04-01', '2025-05-01']
     }
-    if 'Đơn giá' in columns:
-        data['Đơn giá'] = [1000, 1500, 2000, 2500, 3000]
     df = pd.DataFrame(data)
     return df
 
 # Thiết lập cấu hình trang và tiêu đề
 st.set_page_config(page_title='Hệ Thống Báo Cáo', layout='wide')
 
-# Hiển thị logo
-st.sidebar.image('logo.png', width=100)
+# Hiển thị tiêu đề và logo
+st.markdown("<h1 style='text-align: center; color: black;'>Hệ Thống Báo Cáo</h1>", unsafe_allow_html=True)
+st.image('logo.png', use_column_width=True)
+
+# Tạo thanh bên với các menu
 st.sidebar.title('Menu')
 
 # Tạo các menu chính và phụ
@@ -52,7 +55,6 @@ for main_item, sub_items in menu.items():
         st.sidebar.markdown(main_item)
 
 # Phần điều kiện lọc
-st.title('Hệ Thống Báo Cáo')
 st.markdown('### Điều kiện lọc')
 col1, col2 = st.columns(2)
 with col1:
@@ -66,16 +68,21 @@ with col3:
 with col4:
     ten = st.text_input('Tên')
 
-# Tạo nút thực hiện lọc và in ra PDF
-filter_button = st.button('Thực hiện lọc')
-pdf_button = st.button('In ra PDF')
+# Nút thực hiện lọc và in ra PDF
+col5, col6 = st.columns(2)
+with col5:
+    filter_button = st.button('Thực hiện lọc')
+with col6:
+    pdf_button = st.button('In ra PDF')
 
 # Sinh dữ liệu báo cáo giả lập
-report_data = generate_report_data(['Mã', 'Tên'])
+report_data = generate_report_data()
 
 # Lọc và hiển thị dữ liệu khi bấm nút Thực hiện lọc
 if filter_button:
     filtered_data = report_data[
+        (report_data['Ngày'] >= str(from_date)) &
+        (report_data['Ngày'] <= str(to_date)) &
         (report_data['Mã'].str.contains(ma, case=False)) &
         (report_data['Tên'].str.contains(ten, case=False))
     ]
@@ -89,13 +96,14 @@ if filter_button:
 if 'Danh mục biệt dược' in menu['System']:
     with st.sidebar.expander('Danh mục biệt dược', expanded=False):
         if st.sidebar.button('Hiển thị dữ liệu', key='1'):
-            df = generate_report_data(['Mã', 'Tên'])
+            df = generate_report_data()
             st.subheader('Danh mục biệt dược')
             st.dataframe(df)
 
 if 'Danh mục viện phí' in menu['System']:
     with st.sidebar.expander('Danh mục viện phí', expanded=False):
         if st.sidebar.button('Hiển thị dữ liệu', key='2'):
-            df = generate_report_data(['Mã', 'Tên', 'Đơn giá'])
+            df = generate_report_data()
+            df['Đơn giá'] = [1000, 1500, 2000, 2500, 3000]
             st.subheader('Danh mục viện phí')
             st.dataframe(df)
