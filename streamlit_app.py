@@ -18,45 +18,75 @@ def display_report(df, title):
     st.dataframe(df)
 
 # Thiết lập tiêu đề và mô tả cho ứng dụng
-st.title('Hệ Thống Báo Cáo')
+st.set_page_config(page_title='Hệ Thống Báo Cáo', layout='wide')
+st.image('logo.png', width=100)
 
-# Tạo thanh bên với các menu
 st.sidebar.title('Menu')
-menu = ['Dashboard', 'Courses', 'Policies', 'Records', 'Incidents', 'Knowledgebase', 'Library', 'Administration', 'HR', 'Project Management', 'Profile', 'Reports', 'Logout']
-menu_choice = st.sidebar.radio('Chọn menu', menu)
+st.sidebar.markdown('<div style="background-color: #f8d7da; padding: 10px;">', unsafe_allow_html=True)
 
-if menu_choice == 'Reports':
-    st.sidebar.title('Điều kiện lọc')
+# Tạo các menu chính
+menu = {
+    'Dashboard': [],
+    'Bis': ['Bảng kê thu chi', 'Bảng kê tạm ứng', 'Doanh thu'],
+    'His': ['Cấp cứu', 'Khám bệnh', 'Nội Trú', 'Tổng hợp'],
+    'Phis': ['Báo cáo NXT', 'Báo cáo tổng hợp', 'Nhập kho', 'Xuất kho'],
+    'Ris': [],
+    'Ensua': [],
+    'System': []
+}
 
-    # Tạo các menu báo cáo
-    report_menu = ['Báo cáo theo Ngày', 'Báo cáo theo Mã', 'Báo cáo theo Tên']
-    report_choice = st.sidebar.selectbox('Chọn báo cáo', report_menu)
+# Tạo các menu phụ
+sub_menu = {
+    'Khám bệnh': ['Danh sách đăng ký', 'Danh sách khám bệnh'],
+    'Nội Trú': ['Danh sách hiện diện'],
+    'Tổng hợp': ['Vụ kế hoạch', 'Vụ điều trị']
+}
 
-    # Sinh dữ liệu báo cáo giả lập
-    report_data = generate_report_data()
+# Chọn menu chính
+main_menu = st.sidebar.selectbox('Chọn menu', list(menu.keys()))
 
-    # Các điều kiện lọc chung
-    from_date = st.sidebar.date_input('Từ ngày', value=pd.to_datetime('2025-01-01'))
-    to_date = st.sidebar.date_input('Đến ngày', value=pd.to_datetime('2025-12-31'))
-    filtered_data = report_data[(report_data['Ngay'] >= str(from_date)) & (report_data['Ngay'] <= str(to_date))]
-
-    # Hiển thị báo cáo dựa trên menu đã chọn
-    if report_choice == 'Báo cáo theo Ngày':
-        display_report(filtered_data, 'Báo cáo theo Ngày')
-
-    elif report_choice == 'Báo cáo theo Mã':
-        ma = st.sidebar.text_input('Nhập mã')
-        filtered_data = filtered_data[filtered_data['MA'].str.contains(ma)]
-        display_report(filtered_data, 'Báo cáo theo Mã')
-
-    elif report_choice == 'Báo cáo theo Tên':
-        ten = st.sidebar.text_input('Nhập tên')
-        filtered_data = filtered_data[filtered_data['TEN'].str.contains(ten)]
-        display_report(filtered_data, 'Báo cáo theo Tên')
-
-# Hiển thị bảng dữ liệu mẫu khi chọn menu khác
+# Chọn menu phụ nếu có
+if menu[main_menu]:
+    sub_menu_choice = st.sidebar.selectbox('Chọn loại báo cáo', menu[main_menu])
 else:
-    st.sidebar.write('Chọn "Reports" để xem báo cáo.')
-    sample_data = generate_report_data()
+    sub_menu_choice = None
+
+# Chọn menu con nếu có
+if sub_menu_choice in sub_menu:
+    sub_sub_menu_choice = st.sidebar.selectbox('Chọn loại báo cáo chi tiết', sub_menu[sub_menu_choice])
+else:
+    sub_sub_menu_choice = None
+
+st.sidebar.markdown('</div>', unsafe_allow_html=True)
+
+# Phần điều kiện lọc
+st.title('Hệ Thống Báo Cáo')
+st.markdown('### Điều kiện lọc')
+from_date = st.date_input('Từ ngày', value=pd.to_datetime('2025-01-01'))
+to_date = st.date_input('Đến ngày', value=pd.to_datetime('2025-12-31'))
+ma = st.text_input('Mã')
+ten = st.text_input('Tên')
+filter_button = st.button('Thực hiện lọc')
+
+# Sinh dữ liệu báo cáo giả lập
+report_data = generate_report_data()
+
+# Lọc dữ liệu khi bấm nút Thực hiện lọc
+if filter_button:
+    filtered_data = report_data[
+        (report_data['Ngay'] >= str(from_date)) &
+        (report_data['Ngay'] <= str(to_date)) &
+        (report_data['MA'].str.contains(ma, case=False)) &
+        (report_data['TEN'].str.contains(ten, case=False))
+    ]
+    display_report(filtered_data, 'Dữ liệu báo cáo')
+
+# Nút xem trước mẫu in và in ra PDF
+if filter_button:
+    st.button('Xem trước mẫu in')
+    st.button('In ra PDF')
+
+# Hiển thị bảng dữ liệu mẫu khi chưa chọn báo cáo
+if not filter_button:
     st.write('Bảng dữ liệu mẫu:')
-    st.dataframe(sample_data)
+    st.dataframe(report_data)
