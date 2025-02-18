@@ -17,7 +17,7 @@ st.set_page_config(page_title='Hệ Thống Báo Cáo', layout='wide')
 
 # Hiển thị tiêu đề và logo
 st.markdown("<h1 style='text-align: center; color: black;'>Hệ Thống Báo Cáo</h1>", unsafe_allow_html=True)
-st.image('logo.png', use_column_width=True)
+st.image('logo.png', use_container_width=True)
 
 # Tạo thanh bên với các menu
 st.sidebar.title('Menu')
