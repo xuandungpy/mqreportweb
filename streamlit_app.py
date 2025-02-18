@@ -88,14 +88,14 @@ if filter_button:
 # Hiển thị dữ liệu mẫu khi click vào Danh mục biệt dược hoặc Danh mục viện phí
 if 'Danh mục biệt dược' in menu['System']:
     with st.sidebar.expander('Danh mục biệt dược', expanded=False):
-        if st.sidebar.button('Hiển thị dữ liệu'):
+        if st.sidebar.button('Hiển thị dữ liệu', key='1'):
             df = generate_report_data(['Mã', 'Tên'])
             st.subheader('Danh mục biệt dược')
             st.dataframe(df)
 
 if 'Danh mục viện phí' in menu['System']:
     with st.sidebar.expander('Danh mục viện phí', expanded=False):
-        if st.sidebar.button('Hiển thị dữ liệu'):
+        if st.sidebar.button('Hiển thị dữ liệu', key='2'):
             df = generate_report_data(['Mã', 'Tên', 'Đơn giá'])
             st.subheader('Danh mục viện phí')
             st.dataframe(df)
