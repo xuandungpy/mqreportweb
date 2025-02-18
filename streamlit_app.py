@@ -107,3 +107,4 @@ if 'Danh mục viện phí' in menu['System']:
             df['Đơn giá'] = [1000, 1500, 2000, 2500, 3000]
             st.subheader('Danh mục viện phí')
             st.dataframe(df)
+
