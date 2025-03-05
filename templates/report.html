@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Báo cáo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Báo cáo</h1>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <a class="navbar-brand" href="/report">Báo cáo</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/input">Nhập liệu</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <form method="POST" action="/report" class="mb-4">
+            <div class="form-row">
+                <div class="col">
+                    <label for="date">Ngày:</label>
+                    <input type="date" class="form-control" id="date" name="date" value="{{ selected_date or '' }}">
+                </div>
+                <div class="col">
+                    <label for="userId">UserID:</label>
+                    <select class="form-control" id="userId" name="userId">
+                        <option value="all" {% if not selected_user_id or selected_user_id == 'all' %}selected{% endif %}>Tất cả</option>
+                        {% for uid in user_ids %}
+                            <option value="{{ uid }}" {% if selected_user_id == uid %}selected{% endif %}>{{ uid }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col">
+                    <label for="title">Tiêu đề:</label>
+                    <input type="text" class="form-control" id="title" name="title" value="{{ selected_title or '' }}" placeholder="Nhập tiêu đề">
+                </div>
+                <div class="col align-self-end">
+                    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="mb-4">
+            <form method="POST" action="/report/export_pdf" style="display:inline;">
+                <input type="hidden" name="date" value="{{ selected_date or '' }}">
+                <input type="hidden" name="userId" value="{{ selected_user_id or 'all' }}">
+                <input type="hidden" name="title" value="{{ selected_title or '' }}">
+                <button type="submit" class="btn btn-success">Xuất PDF</button>
+            </form>
+            <form method="POST" action="/report/export_excel" style="display:inline;">
+                <input type="hidden" name="date" value="{{ selected_date or '' }}">
+                <input type="hidden" name="userId" value="{{ selected_user_id or 'all' }}">
+                <input type="hidden" name="title" value="{{ selected_title or '' }}">
+                <button type="submit" class="btn btn-info">Xuất Excel</button>
+            </form>
+            <button onclick="window.print()" class="btn btn-primary">In trang</button>
+        </div>
+
+        <h3>Bảng dữ liệu</h3>
+        <div class="table-responsive">
+            {{ table | safe }}
+        </div>
+        
+        <h3>Biểu đồ hình tròn (Tỷ lệ bài viết theo UserID)</h3>
+        <img src="data:image/png;base64,{{ pie_url }}" alt="Biểu đồ hình tròn">
+        
+        <h3>Biểu đồ đường (Số lượng bài viết theo UserID)</h3>
+        <img src="data:image/png;base64,{{ line_url }}" alt="Biểu đồ đường">
+    </div>
+</body>
+</html>

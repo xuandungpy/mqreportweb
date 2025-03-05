@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nhập liệu</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function updateGrid() {
+            let table = document.getElementById('gridTable');
+            let data = [];
+            for (let i = 1; i < table.rows.length; i++) {
+                let row = table.rows[i];
+                let date = row.cells[0].children[0].value;
+                let userId = row.cells[1].children[0].value;
+                let title = row.cells[2].children[0].value;
+                let isActive = row.cells[3].children[0].checked;
+                data.push({date: date, userId: userId, title: title, is_active: isActive});
+            }
+            document.getElementById('grid_data').value = JSON.stringify(data);
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Nhập liệu</h1>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <a class="navbar-brand" href="/input">Nhập liệu</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/report">Báo cáo</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Form nhập liệu -->
+        <form method="POST" action="/input" class="mb-4">
+            <div class="card">
+                <div class="card-header">Thông tin nhập liệu</div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="date">Ngày:</label>
+                            <input type="date" class="form-control" id="date" name="date">
+                        </div>
+                        <div class="col">
+                            <label for="userId">UserID:</label>
+                            <select class="form-control" id="userId" name="userId">
+                                {% for uid in user_ids %}
+                                    <option value="{{ uid }}">{{ uid }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="title">Tiêu đề:</label>
+                            <input type="text" class="form-control" id="title" name="title" placeholder="Nhập tiêu đề">
+                        </div>
+                        <div class="col align-self-end">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="is_active" name="is_active">
+                                <label class="form-check-label" for="is_active">Hoạt động</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" name="add" class="btn btn-primary">Thêm</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Grid nhập liệu -->
+        <h3>Danh sách dữ liệu</h3>
+        <form method="POST" action="/input" onsubmit="updateGrid()">
+            <div class="table-responsive">
+                <table id="gridTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Ngày</th>
+                            <th>UserID</th>
+                            <th>Tiêu đề</th>
+                            <th>Hoạt động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in input_data %}
+                            <tr>
+                                <td><input type="date" class="form-control" value="{{ row.date }}"></td>
+                                <td><input type="text" class="form-control" value="{{ row.userId }}"></td>
+                                <td><input type="text" class="form-control" value="{{ row.title }}"></td>
+                                <td><input type="checkbox" class="form-check-input" {% if row.is_active %}checked{% endif %}></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <input type="hidden" id="grid_data" name="grid_data">
+            <button type="submit" name="update" class="btn btn-success">Cập nhật</button>
+        </form>
+    </div>
+</body>
+</html>
