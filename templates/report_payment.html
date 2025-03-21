@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Báo cáo thu chi ra viện{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4 text-primary">Báo cáo thu chi ra viện</h1>
+    <div class="card shadow mt-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Số biên lai</th>
+                            <th>Mã BN</th>
+                            <th>Họ tên</th>
+                            <th>Số tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in data %}
+                        <tr>
+                            <td>{{ item.ngay }}</td>
+                            <td>{{ item.sobienlai }}</td>
+                            <td>{{ item.mabn }}</td>
+                            <td>{{ item.hoten }}</td>
+                            <td>{{ item.sotien_formatted }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
