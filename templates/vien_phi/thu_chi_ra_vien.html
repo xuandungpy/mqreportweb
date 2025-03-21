@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Thu chi ra viện - Hệ thống báo cáo{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
+<style>
+    .search-box {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .table-responsive {
+        overflow-x: auto;
+    }
+    .summary-box {
+        background-color: #e9ecef;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+    .export-btn {
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h4>Bảng kê thu chi ra viện</h4>
+        <div>
+            <button class="btn btn-light btn-sm export-btn" id="exportExcel">
+                <i class="fas fa-file-excel"></i> Xuất Excel
+            </button>
+            <button class="btn btn-light btn-sm export-btn" id="exportPdf">
+                <i class="fas fa-file-pdf"></i> Xuất PDF
+            </button>
+            <button class="btn btn-light btn-sm" id="printReport">
+                <i class="fas fa-print"></i> In báo cáo
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Form tìm kiếm -->
+        <div class="search-box">
+            <form id="searchForm" method="GET" action="{{ url_for('vien_phi.thu_chi_ra_vien') }}">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="dateRange" class="form-label">Khoảng thời gian</label>
+                            <input type="text" class="form-control" id="dateRange" name="dateRange">
+                            <input type="hidden" id="ngay_bat_dau" name="ngay_bat_dau">
+                            <input type="hidden" id="ngay_ket_thuc" name="ngay_ket_thuc">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="mabn" class="form-label">Mã bệnh nhân</label>
+                            <input type="text" class="form-control" id="mabn" name="mabn" value="{{ request.args.get('mabn', '') }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="hoten" class="form-label">Họ tên bệnh nhân</label>
+                            <input type="text" class="form-control" id="hoten" name="hoten" value="{{ request.args.get('hoten', '') }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-grid d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Kết quả tìm kiếm -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="resultsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th width="5%">STT</th>
+                        <th width="15%">Ngày</th>
+                        <th width="15%">Số biên lai</th>
+                        <th width="15%">Mã BN</th>
+                        <th width="30%">Họ tên</th>
+                        <th width="20%">Số tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if data and data.records %}
+                        {% for record in data.records %}
+                            <tr>
+                                <td class="text-center">{{ loop.index }}</td>
+                                <td>{{ record.ngay }}</td>
+                                <td>{{ record.sobienlai }}</td>
+                                <td>{{ record.mabn }}</td>
+                                <td>{{ record.hoten }}</td>
+                                <td class="text-end">{{ record.sotien_fmt }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">Không có dữ liệu</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tổng kết -->
+        {% if data and data.records %}
+            <div class="summary-box">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Tổng số bản ghi:</strong> {{ data.so_luong }}</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p><strong>Tổng tiền:</strong> {{ data.tong_tien_fmt }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Daterangepicker
+        $('#dateRange').daterangepicker({
+            opens: 'left',
+            locale: {
+                format: 'DD/MM/YYYY',
+                applyLabel: 'Áp dụng',
+                cancelLabel: 'Hủy',
+                fromLabel: 'Từ',
+                toLabel: 'Đến',
+                customRangeLabel: 'Tùy chỉnh',
+                daysOfWeek: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                firstDay: 1
+            },
+            startDate: moment().subtract(7, 'days'),
+            endDate: moment()
+        }, function(start, end) {
+            $('#ngay_bat_dau').val(start.format('YYYY-MM-DD'));
+            $('#ngay_ket_thuc').val(end.format('YYYY-MM-DD'));
+        });
+
+        // Set initial values for date range inputs
+        $('#ngay_bat_dau').val(moment().subtract(7, 'days').format('YYYY-MM-DD'));
+        $('#ngay_ket_thuc').val(moment().format('YYYY-MM-DD'));
+
+        // Handle form submission with AJAX (optional)
+        $('#searchForm').on('submit', function(e) {
+            // Uncomment to enable AJAX loading instead of page reload
+            /*
+            e.preventDefault();
+            
+            $.ajax({
+                url: "{{ url_for('vien_phi.api_thu_chi_ra_vien') }}",
+                data: $(this).serialize(),
+                success: function(data) {
+                    // Update table with the received data
+                    updateTable(data);
+                }
+            });
+            */
+        });
+
+        // Export to Excel
+        $('#exportExcel').on('click', function() {
+            alert('Chức năng xuất Excel đang được phát triển');
+        });
+
+        // Export to PDF
+        $('#exportPdf').on('click', function() {
+            alert('Chức năng xuất PDF đang được phát triển');
+        });
+
+        // Print report
+        $('#printReport').on('click', function() {
+            window.print();
+        });
+
+        // Function to update the table with AJAX response data
+        function updateTable(data) {
+            let tableBody = $('#resultsTable tbody');
+            tableBody.empty();
+            
+            if (data.records && data.records.length > 0) {
+                $.each(data.records, function(index, record) {
+                    let row = $('<tr>');
+                    row.append($('<td class="text-center">').text(index + 1));
+                    row.append($('<td>').text(record.ngay));
+                    row.append($('<td>').text(record.sobienlai));
+                    row.append($('<td>').text(record.mabn));
+                    row.append($('<td>').text(record.hoten));
+                    row.append($('<td class="text-end">').text(record.sotien_fmt || (record.sotien + ' VNĐ')));
+                    tableBody.append(row);
+                });
+                
+                // Update summary
+                $('.summary-box').html(`
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Tổng số bản ghi:</strong> ${data.so_luong}</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <p><strong>Tổng tiền:</strong> ${data.tong_tien_fmt}</p>
+                        </div>
+                    </div>
+                `).show();
+            } else {
+                tableBody.append('<tr><td colspan="6" class="text-center">Không có dữ liệu</td></tr>');
+                $('.summary-box').hide();
+            }
+        }
+    });
+</script>
+{% endblock %}

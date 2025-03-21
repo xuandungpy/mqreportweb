@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Trang chính - Hệ thống báo cáo{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>Trang chính</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Viện phí</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <a href="#" class="text-decoration-none">Bảng kê</a>
+                                        <ul>
+                                            <li><a href="{{ url_for('vien_phi.thu_chi_ra_vien') }}" class="text-decoration-none">Thu chi ra viện</a></li>
+                                            <li><a href="#" class="text-decoration-none">Tạm ứng</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="#" class="text-decoration-none">Các loại sổ</a>
+                                        <ul>
+                                            <li><a href="#" class="text-decoration-none">Sổ thu tiền</a></li>
+                                            <li><a href="#" class="text-decoration-none">Sổ công nợ</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">His</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><a href="#" class="text-decoration-none">Cấp cứu</a></li>
+                                    <li class="list-group-item">
+                                        <a href="#" class="text-decoration-none">Khám bệnh</a>
+                                        <ul>
+                                            <li><a href="#" class="text-decoration-none">Danh sách đăng ký</a></li>
+                                            <li><a href="#" class="text-decoration-none">Danh sách khám bệnh</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="#" class="text-decoration-none">Nội trú</a>
+                                        <ul>
+                                            <li><a href="#" class="text-decoration-none">Danh sách hiện diện</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="list-group-item"><a href="#" class="text-decoration-none">Tổng hợp</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Thống kê nhanh</h5>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="card bg-primary text-white">
+                                            <div class="card-body text-center">
+                                                <h3>45</h3>
+                                                <p>Bệnh nhân mới</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="card bg-success text-white">
+                                            <div class="card-body text-center">
+                                                <h3>120</h3>
+                                                <p>Khám trong ngày</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-6">
+                                        <div class="card bg-info text-white">
+                                            <div class="card-body text-center">
+                                                <h3>28</h3>
+                                                <p>Nội trú</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="card bg-warning text-dark">
+                                            <div class="card-body text-center">
+                                                <h3>8</h3>
+                                                <p>Cấp cứu</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
